@@ -7,5 +7,8 @@ The Software of NoBox's Line Follow robot
 
 
 # Contributors
-
+* [Gustavo Silva de Paula](https://github.com/Gustavo7337)
 * [Ivan Seidel](http://github.com/ivanseidel)
+* [João Pedro Poloni Ponce](https://github.com/JoaoPedroPP)
+* [Marcelo Farias](https://github.com/MarceloFariaz)
+* [Yves-Medhard Tibe-Bi](https://github.com/yvesmedhard)
