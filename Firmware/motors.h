@@ -20,9 +20,6 @@ public:
 	// Set power of both DC motors
 	static void setPower(float m1, float m2);
 
-    // Set angle of Servo motors
-	static void setAngle(float a);
-
 	// Set state as Iddle (Turn off motors)
 	static void stop();
 };
