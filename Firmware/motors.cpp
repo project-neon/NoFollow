@@ -51,13 +51,6 @@ void Motors::setPower(float m1, float m2){
 	
 }
 
-// Set angle of Servo motor
-void Motors::setAngle(float a){
-    //TODO: SETAR O ANGULO
-	
-}
-
-
 void Motors::stop(){
 	// Set power (0)
 	digitalWrite(PIN_M1_EN, LOW);
