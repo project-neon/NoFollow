@@ -5,10 +5,8 @@
 #define MUX_H
 
 class Mux{  
-public:
-
-    Mux();
-    
-    readValues();
+public:    
+    void readValues();
+    int getValue();
 };
 #endif
