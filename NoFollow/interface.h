@@ -8,6 +8,7 @@
 class Interface{
 public:
   static void init();
+  static int readButton(int value);
 };
 
 #endif
