@@ -45,14 +45,17 @@
 #define STICK_RIGHT             30
 #define STICK_CENTER            52
 
+//
+// EEPROM Adresses
+//
+#define EEPROM_ADR_SENSOR_MIN   
+#define EEPROM_ADR_SENSOR_MAX   
 
 
 //
 // I2C Config (IMU/Display
 //
 #define IMU_INTERRUPT_CHANNEL   0
-
-
 
 //
 // Motors config (H-Bridge)
@@ -66,14 +69,11 @@
 #define PIN_M2_IN1              8
 #define PIN_M2_IN2              MISO
 
-
 //
 // Servos for Ackerman
 //
-#define PIN_ACKERMAN_LEFT       13
-#define PIN_ACKERMAN_RIGHT       9
-
-
+#deine PIN_ACKERMAN_LEFT        13
+#deine PIN_ACKERMAN_RIGHT       9
 
 //
 // VBat Reader (battery status)
