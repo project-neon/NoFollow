@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <EEPROM.h>
 
 #include "_config.h"
 #include "_types.h"
@@ -6,6 +7,8 @@
 #include "lineReader.h"
 
 int values[16];
+int SENSOR_MIN;
+int SENSOR_MAX;
 
 int MUX_INS[] = {
   PIN_MUX_S0,
@@ -20,6 +23,9 @@ void LineReader::init(){
   pinMode(PIN_MUX_S1, OUTPUT);
   pinMode(PIN_MUX_S2, OUTPUT);
   pinMode(PIN_MUX_S3, OUTPUT);
+  SENSOR_MIN = EEPROM.read(EEPROM_ADR_SENSOR_MIN);
+  SENSOR_MAX = EEPROM.read(EEPROM_ADR_SENSOR_MAX);
+
 }
 
 void LineReader::readValues(){
@@ -38,7 +44,6 @@ int LineReader::getValue(int index){
 float getPosition(){
   float weighted_sum = 0;
   float sum = 0;
-  //TODO Replace SENSOR_MAX and SENSOR_MIN to a Call Method getting the values
   for(int i = 0; i < 9; i++){
     value = map(getValue(i), SENSOR_MIN, SENSOR_MAX, 0, 1);
     weighted_sum = weighted_sum + value  * (i + 1);
@@ -47,4 +52,3 @@ float getPosition(){
   float position = ((weighted_sum / sum) - 4.5) / 3.5;
   return position;
 }
-
