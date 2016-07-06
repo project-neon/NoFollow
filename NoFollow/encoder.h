@@ -4,7 +4,7 @@
 #ifndef ENCODER_H
 #define ENCODER_H
 
-class Interface{
+class Encoder{
 public:
   static void init();
   static float getSpeed();
