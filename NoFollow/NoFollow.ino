@@ -67,6 +67,9 @@ void setup(){
   display.setTextColor(WHITE);
   display.print("0x"); display.println(0xDEADBEEF, HEX);
   display.display();
+
+  Motors::setPower(50,0);
+  
 }
 
 // long start, end;
