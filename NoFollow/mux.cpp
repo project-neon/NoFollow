@@ -6,7 +6,7 @@
 
 class Mux{
 int values [16];
-	static S[4] = {PIN_MUX_S0, PIN_MUX_S1, PIN_MUX_S2, PIN_MUX_S3};
+	static int S[4] = {PIN_MUX_S0, PIN_MUX_S1, PIN_MUX_S2, PIN_MUX_S3};
 	
 	public: readValues(){
 		for(uint8_t i = 0; i<16; i++){
