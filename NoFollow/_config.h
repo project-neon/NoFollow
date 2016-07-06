@@ -35,6 +35,15 @@
 #define PIN_MUX_S2              7
 #define PIN_MUX_S3              4
 
+//
+// Stick Settings
+//
+#define STICK_RELEASED          0
+#define STICK_UP                64
+#define STICK_LEFT              127
+#define STICK_DOWN              192
+#define STICK_RIGHT             255
+
 
 //
 // I2C Config (IMU/Display

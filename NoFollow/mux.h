@@ -6,7 +6,7 @@
 
 class Mux{  
 public:    
-    void readValues();
-    int getValue();
+    static void readValues();
+    static int getValue();
 };
 #endif
