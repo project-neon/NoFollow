@@ -21,7 +21,7 @@ public:
 	float iLimit;       //< integral limit
 
   PID(float kp, float ki, float kd, float _ilimit);
-  void setSetPoint(double _setPoint);
+  void setSetPoint(float _setPoint);
   float update(float input, float dt);
 	void clear();
 };

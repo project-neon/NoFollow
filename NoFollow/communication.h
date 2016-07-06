@@ -16,14 +16,6 @@ public:
 	// ====================================
 
 	static void init();
-
-
-	// ====================================
-	//           MESSAGE PARSING
-	// ====================================
-
-	static bool handleMessage(uint8_t message[], uint8_t len);
-	// Parse the message and take action
 };
 
 
