@@ -38,11 +38,13 @@
 //
 // Stick Settings
 //
-#define STICK_RELEASED          0
-#define STICK_UP                64
-#define STICK_LEFT              127
-#define STICK_DOWN              192
-#define STICK_RIGHT             255
+#define STICK_RELEASED          254
+#define STICK_UP                17
+#define STICK_LEFT              3
+#define STICK_DOWN              42
+#define STICK_RIGHT             30
+#define STICK_CENTER            52
+
 
 
 //
