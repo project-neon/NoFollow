@@ -1,3 +1,4 @@
+#include <Servo.h>
 #include <Arduino.h>
 
 #include "_config.h"
@@ -8,9 +9,18 @@
 
 float Motors::avgSpeed = 0;
 
+Servo ackermanLeft;
+Servo ackermanRight;
+
 // Initialize pins
 void Motors::init(){
 	LOG("Motors::init\n");
+
+  ackermanLeft.attach(PIN_ACKERMAN_LEFT);
+  ackermanLeft.write(90);
+
+  ackermanRight.attach(PIN_ACKERMAN_RIGHT);
+  ackermanRight.write(90);
 
 	pinMode(PIN_M1_EN, OUTPUT);
 	pinMode(PIN_M2_EN, OUTPUT);
@@ -20,6 +30,15 @@ void Motors::init(){
 
 	pinMode(PIN_M1_IN2, OUTPUT);
 	pinMode(PIN_M2_IN2, OUTPUT);
+}
+
+// Sets the steering for the wheels
+void Motors::setSteering(float steer){
+  steer = min(max(steer, -100), 100);
+  steer = steer * (180.0 / 200.0) + 90;
+
+  ackermanLeft.write(steer);
+  ackermanRight.write(steer);
 }
 
 // Set power of both DC motors
@@ -40,11 +59,11 @@ void Motors::setPower(float m1, float m2){
 	analogWrite(PIN_M2_EN, abs(powerOutB));
 
 	// Set Directions
-	digitalWrite(PIN_M1_IN1, powerOutA > 0 ? HIGH : LOW);
-	digitalWrite(PIN_M1_IN2, powerOutA > 0 ? LOW : HIGH);
+	digitalWrite(PIN_M1_IN1, powerOutA >  0 ? HIGH : LOW);
+	digitalWrite(PIN_M1_IN2, powerOutA >= 0 ? LOW : HIGH);
 
-	digitalWrite(PIN_M2_IN1, powerOutB > 0 ? HIGH : LOW);
-	digitalWrite(PIN_M2_IN2, powerOutB > 0 ? LOW : HIGH);
+	digitalWrite(PIN_M2_IN1, powerOutB >  0 ? HIGH : LOW);
+	digitalWrite(PIN_M2_IN2, powerOutB >= 0 ? LOW : HIGH);
 
 }
 
