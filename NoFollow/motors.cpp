@@ -14,15 +14,12 @@ void Motors::init(){
 
 	pinMode(PIN_M1_EN, OUTPUT);
 	pinMode(PIN_M2_EN, OUTPUT);
-    pinMode(PIN_M3_EN, OUTPUT);
-	
+
 	pinMode(PIN_M1_IN1, OUTPUT);
 	pinMode(PIN_M2_IN1, OUTPUT);
-    pinMode(PIN_M3_IN1, OUTPUT);
 
 	pinMode(PIN_M1_IN2, OUTPUT);
 	pinMode(PIN_M2_IN2, OUTPUT);
-    pinMode(PIN_M3_IN2, OUTPUT);
 }
 
 // Set power of both DC motors
@@ -48,21 +45,17 @@ void Motors::setPower(float m1, float m2){
 
 	digitalWrite(PIN_M2_IN1, powerOutB > 0 ? HIGH : LOW);
 	digitalWrite(PIN_M2_IN2, powerOutB > 0 ? LOW : HIGH);
-	
+
 }
 
 void Motors::stop(){
-	// Set power (0)
+	// Stop motor 1
 	digitalWrite(PIN_M1_EN, LOW);
-	digitalWrite(PIN_M2_EN, LOW);
-    digitalWrite(PIN_M3_EN, LOW);
-
-	// Set both DIRS to 0
 	digitalWrite(PIN_M1_IN1, LOW);
-	digitalWrite(PIN_M2_IN1, LOW);
-    digitalWrite(PIN_M3_IN1, LOW);
+  digitalWrite(PIN_M1_IN2, LOW);
 
-	digitalWrite(PIN_M1_IN2, LOW);
-	digitalWrite(PIN_M2_IN2, LOW);
-    digitalWrite(PIN_M3_IN2, LOW);
+  // Stop motor 2
+  digitalWrite(PIN_M2_EN, LOW);
+  digitalWrite(PIN_M2_IN1, LOW);
+  digitalWrite(PIN_M2_IN2, LOW);
 }

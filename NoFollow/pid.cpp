@@ -1,7 +1,7 @@
 //That is the version v0.1 of the PID controller
 #include "pid.h"
 
-PID::PID(float _kp, float _ki, float _kd, float _iLimit = DEFAULT_PID_INTEGRATION_LIMIT){
+PID::PID(float _kp, float _ki, float _kd, float _iLimit = 100){
     this->kp = _kp;
     this->ki = _ki;
     this->kd = _kd;
