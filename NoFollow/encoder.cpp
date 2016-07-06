@@ -5,10 +5,7 @@
 
 #include "encoder.h"
 
-
-
-
-void Encoder::Init() {
+void Encoder::Init(){
 
   pinMode(encoder0PinA, INPUT); 
   pinMode(encoder0PinB, INPUT); 
