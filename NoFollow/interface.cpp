@@ -26,15 +26,16 @@ void Interface::init(){
 	// display.display();
 }
 int Interface::readValue(int val){
-	int c =-1;
-	int d = 256;
+	int state =-1;
+	int minError = 256;
 	val = val/4;
-	for(int i = 0; i < 5; i++){
+	int lenght =sizeof(SITCK)/sizeof(STICK[0]
+	for(int i = 0; i < sizeof(SITCK)/sizeof(STICK[0]); i++){
 		int diff = val > STICK[i] ? val - STICK[i] : STICK[i] - val;
-		if(diff < d){
-			d = diff;
-			c = i;
+		if(diff < minError){
+			minError = diff;
+			state = i;
 		}
-	return STICK[i];
+	return STICK[state];
 	}
 }
