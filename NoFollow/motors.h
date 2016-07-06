@@ -17,6 +17,9 @@ public:
 	// Initialize pins
 	static void init();
 
+  // Set the steering for the wheels
+  static void setSteering(float steer);
+
 	// Set power of both DC motors
 	static void setPower(float m1, float m2);
 

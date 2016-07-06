@@ -57,14 +57,22 @@
 //
 // Motors config (H-Bridge)
 //
-#define MOTOR_ABS_MAX           200
+#define MOTOR_ABS_MAX           255
 #define PIN_M1_EN               11
-#define PIN_M1_IN1              15
-#define PIN_M1_IN2              16
+#define PIN_M1_IN1              MOSI
+#define PIN_M1_IN2              SCK
 
 #define PIN_M2_EN               10
-#define PIN_M2_IN1              14
-#define PIN_M2_IN2              8
+#define PIN_M2_IN1              8
+#define PIN_M2_IN2              MISO
+
+
+//
+// Servos for Ackerman
+//
+#define PIN_ACKERMAN_LEFT       13
+#define PIN_ACKERMAN_RIGHT       9
+
 
 
 //
