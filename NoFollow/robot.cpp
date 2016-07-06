@@ -35,7 +35,7 @@ Thread threadWatchdog(threadWatchdog_run, 500);
 // Thread: IMU
 //
 void imu_run();
-IMUThread imuSensor;
+// IMUThread imuSensor;
 
 
 // ====================================
@@ -56,7 +56,7 @@ void Robot::init(){
   LOG(PROJECT_VERSION); LOG("\n\n");
 
   // Configure LED
-  DDRE |= (1<<2);
+  // DDRE |= (1<<2);
 
   // Configure Buzzer
   pinMode(PIN_BUZZER, OUTPUT);
@@ -69,11 +69,11 @@ void Robot::init(){
 
   // Initialize IMU
   // imuSensor = new IMUThread();
-  imuSensor.init();
-  imuSensor.setInterval(9);
+  // imuSensor.init();
+  // imuSensor.setInterval(9);
 
   // Add threads to system
-  system.add(&imuSensor);
+  // system.add(&imuSensor);
   system.add(&threadBeeper);
   system.add(&threadWatchdog);
   // system.add(&threadBatteryChecker);
@@ -205,7 +205,7 @@ void threadWatchdog_run(){
   // ledState = true;
 
   // Set led power to ledState state
-  ledState ? (PORTE |=  (1<<2)) : (PORTE &= ~(1<<2));
+  // ledState ? (PORTE |=  (1<<2)) : (PORTE &= ~(1<<2));
 
   // Set timeout acordingly to Robot's state
   threadWatchdog.setInterval(Robot::state == IDDLE ? 500 : 100);
