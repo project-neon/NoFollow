@@ -45,7 +45,7 @@ float getPosition(){
   float weighted_sum = 0;
   float sum = 0;
   for(int i = 0; i < 9; i++){
-    value = map(getValue(i), SENSOR_MIN, SENSOR_MAX, 0, 1);
+    float value = map(getValue(i), SENSOR_MIN, SENSOR_MAX, 0, 1);
     weighted_sum = weighted_sum + value  * (i + 1);
     sum = sum + value;
   }
