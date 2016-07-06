@@ -9,5 +9,6 @@ public:
   static void init();
   static void readValues();
   static int getValue(int index);
+  static float getPosition();
 };
 #endif
