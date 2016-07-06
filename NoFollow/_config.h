@@ -74,7 +74,7 @@
 #define VBAT_WARNED            7.40
 
 #define PIN_VBAT                A4
-#define VBAT_VOLTAGE(adc)       adc
+#define VBAT_VOLTAGE(adc)       (adc - 534) * (8.23 - 6.47) / (662-534) + 6.47
 // ((adc - 40.3) / 88.3)
 
 
