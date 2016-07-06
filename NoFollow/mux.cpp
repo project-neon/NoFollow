@@ -8,7 +8,8 @@ class Mux{
 int values [16];
 	static int S[4] = {PIN_MUX_S0, PIN_MUX_S1, PIN_MUX_S2, PIN_MUX_S3};
 	
-	public: readValues(){
+	public:
+	void readValues(){
 		for(uint8_t i = 0; i<16; i++){
 			for(int n = 0; i<4; i++){
 				digitalWrite(S[n], i&(0x1<<n));
@@ -16,11 +17,8 @@ int values [16];
 			values [i] = analogRead(PIN_MUX_AN);
 		}
 	}
-	public: getValue(int i){
+	int getValue(int i){
 		return values[i];
-	}
-	public: getValues(){
-		return values;
 	}
 };
 
