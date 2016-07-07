@@ -7,12 +7,15 @@
 #ifndef MOTORS_H
 #define MOTORS_H
 
-
 class Motors{
 public:
 	// Average of both motors
 	static float avgSpeed;
   static float avgAngle;
+
+  // Steering configurations (Loaded from EEPROM)
+  static int8_t steeringPhase;
+  static int8_t steeringConverge;
 
 	// Initialize pins
 	static void init();
@@ -26,5 +29,8 @@ public:
 	// Set state as Iddle (Turn off motors)
 	static void stop();
 };
+
+extern int MotorsSteeringPhase;
+extern int MotorsSteeringConverge;
 
 #endif

@@ -35,6 +35,7 @@ Activity menus[] = {
   { "Line Follower",      &activityLineFollower},
   { "Line Reader",        &activityLineReader},
   { "Test Actuators",     &activityActuators},
+  { "Steering Config",    &activityCalibrateSteering},
   // { "Calibrate",    &actTest},
   // { "Jhon",         &actTest}
 };

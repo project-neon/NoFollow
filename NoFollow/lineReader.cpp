@@ -57,7 +57,7 @@ float LineReader::getPosition(){
     weighted_sum = weighted_sum + value  * (i - 7);
     sum = sum + value;
   }
-  Serial.println();
+  // Serial.println();
   float position = -((weighted_sum / sum) - 4.5) / 3.5;
   return position;
 }
