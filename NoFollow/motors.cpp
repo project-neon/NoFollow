@@ -14,13 +14,13 @@ Servo ackermanRight;
 
 // Initialize pins
 void Motors::init(){
-	LOG("Motors::init\n");
+	// LOG("Motors::init\n");
 
-  ackermanLeft.attach(PIN_ACKERMAN_LEFT);
-  ackermanLeft.write(90);
+  // ackermanLeft.attach(PIN_ACKERMAN_LEFT);
+  // ackermanLeft.write(90);
 
-  ackermanRight.attach(PIN_ACKERMAN_RIGHT);
-  ackermanRight.write(90);
+  // ackermanRight.attach(PIN_ACKERMAN_RIGHT);
+  // ackermanRight.write(90);
 
 	pinMode(PIN_M1_EN, OUTPUT);
 	pinMode(PIN_M2_EN, OUTPUT);
@@ -30,10 +30,25 @@ void Motors::init(){
 
 	pinMode(PIN_M1_IN2, OUTPUT);
 	pinMode(PIN_M2_IN2, OUTPUT);
+
+  Motors::setPower(0, 0);
+  Motors::setSteering(0, false);
 }
 
 // Sets the steering for the wheels
-void Motors::setSteering(float steer){
+void Motors::setSteering(float steer, bool activate){
+  static bool activated;
+
+  if(activate && !activated){
+    ackermanLeft.attach(PIN_ACKERMAN_LEFT);
+    ackermanRight.attach(PIN_ACKERMAN_RIGHT);
+    activated = true;
+  }else if(!activate && activated){
+    ackermanLeft.detach();
+    ackermanRight.detach();
+    activated = false;
+  }
+
   steer = min(max(steer, -100), 100);
   steer = steer * (180.0 / 200.0) + 90;
 
@@ -44,7 +59,7 @@ void Motors::setSteering(float steer){
 // Set power of both DC motors
 void Motors::setPower(float m1, float m2){
 
-	Motors::avgSpeed = (m1 + m2) / 2.0;
+	// Motors::avgSpeed = (m1 + m2) / 2.0;
 
 	// Limit Powers
 	m1 = min(max(m1, -100), 100);

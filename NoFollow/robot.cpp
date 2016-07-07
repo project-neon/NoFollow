@@ -45,7 +45,7 @@ void Robot::init(){
 
   // Initialize Serial and Wait to be ok
   Serial.begin(SERIAL_SPEED);
-  // while(!Serial);
+  while(!Serial && millis() < 2000);
   delay(50);
 
   // Debug init
@@ -54,6 +54,10 @@ void Robot::init(){
   // Log current version
   LOG("\n===== "); LOG(PROJECT_NAME); LOG(" =====\n");
   LOG(PROJECT_VERSION); LOG("\n\n");
+
+  // Configure I2C
+  Wire.begin();
+  TWBR = ((16000000L / 400000L) - 16) / 2;
 
   // Configure LED
   // DDRE |= (1<<2);
@@ -76,7 +80,7 @@ void Robot::init(){
   // system.add(&imuSensor);
   system.add(&threadBeeper);
   system.add(&threadWatchdog);
-  // system.add(&threadBatteryChecker);
+  system.add(&threadBatteryChecker);
 };
 
 
