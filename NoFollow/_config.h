@@ -8,8 +8,8 @@
 //
 // Project
 //
-#define PROJECT_NAME            "LineFollowFirmware"
-#define PROJECT_VERSION         "v1.00"
+#define PROJECT_NAME            F("LineFollowFirmware")
+#define PROJECT_VERSION         F("v1.00")
 
 
 //
@@ -29,9 +29,10 @@
 //
 // Mux Settings
 //
+#define PIN_MUX_ENABLE          16
 #define PIN_MUX_AN              A5
 #define PIN_MUX_S0              6
-#define PIN_MUX_S1              12
+#define PIN_MUX_S1              A1
 #define PIN_MUX_S2              7
 #define PIN_MUX_S3              4
 
@@ -48,13 +49,14 @@
 //
 // EEPROM Adresses
 //
-#define EEPROM_ADR_SENSOR_MIN   
-#define EEPROM_ADR_SENSOR_MAX   
+#define EEPROM_ADR_SENSOR_MIN   0x01
+#define EEPROM_ADR_SENSOR_MAX   0x02
 
 
 //
 // I2C Config (IMU/Display
 //
+#define DISPLAY_ADDRESS         0x3C
 #define IMU_INTERRUPT_CHANNEL   0
 
 //
@@ -72,8 +74,8 @@
 //
 // Servos for Ackerman
 //
-#deine PIN_ACKERMAN_LEFT        13
-#deine PIN_ACKERMAN_RIGHT       9
+#define PIN_ACKERMAN_LEFT        13
+#define PIN_ACKERMAN_RIGHT       9
 
 //
 // VBat Reader (battery status)

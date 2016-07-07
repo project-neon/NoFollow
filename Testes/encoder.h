@@ -5,7 +5,7 @@
 #define ENCODER_H
 
 class Encoder{
-	
+
 public:
   static void init();
   static float getSpeed();
@@ -20,4 +20,3 @@ public:
 };
 
 #endif
-

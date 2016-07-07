@@ -3,6 +3,8 @@
 #include <math.h>
 #include <helper_3dmath.h>
 
+#include <Thread.h>
+
 #ifndef TYPES_H
 #define TYPES_H
 
@@ -16,6 +18,11 @@ enum BeepState{
   BEEP_NONE = 0,
   WARN = 1,
   ALARM = 2
+};
+
+struct Activity{
+  const String title;
+  Thread *thread;
 };
 
 #endif
