@@ -30,6 +30,7 @@
 #include "runner.h"
 #include "interface.h"
 #include "lineReader.h"
+#include "activities.h"
 // #include "controller.h"
 
 

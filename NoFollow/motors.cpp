@@ -1,4 +1,5 @@
 #include <Servo.h>
+#include <EEPROM.h>
 #include <Arduino.h>
 
 #include "_config.h"
@@ -8,6 +9,8 @@
 #include "motors.h"
 
 float Motors::avgSpeed = 0;
+int8_t Motors::steeringPhase = 0;
+int8_t Motors::steeringConverge = 0;
 
 Servo ackermanLeft;
 Servo ackermanRight;
@@ -15,6 +18,10 @@ Servo ackermanRight;
 // Initialize pins
 void Motors::init(){
 	// LOG("Motors::init\n");
+
+  // Load Steering settigs from EEPROM
+  Motors::steeringPhase = EEPROM.read(EEPROM_STEER_PHASE);
+  Motors::steeringConverge = EEPROM.read(EEPROM_STEER_CONVERGE);
 
   // ackermanLeft.attach(PIN_ACKERMAN_LEFT);
   // ackermanLeft.write(90);
@@ -32,10 +39,11 @@ void Motors::init(){
 	pinMode(PIN_M2_IN2, OUTPUT);
 
   Motors::setPower(0, 0);
-  Motors::setSteering(0, false);
+  Motors::setSteering(0, true);
 }
 
 // Sets the steering for the wheels
+#define SERVO_MAX       140
 void Motors::setSteering(float steer, bool activate){
   static bool activated;
 
@@ -48,12 +56,22 @@ void Motors::setSteering(float steer, bool activate){
     ackermanRight.detach();
     activated = false;
   }
+  // Calculate Limited Steering (Goes from -100 to 100)
+  steer = -min(max(steer, -100.0), 100.0);
 
-  steer = min(max(steer, -100), 100);
-  steer = steer * (180.0 / 200.0) + 90;
+  // Applies Ackerman
+  float left  = (steer > 0 ?  steer : 0) * 0.3;
+  float right = (steer < 0 ? -steer : 0) * 0.3;
 
-  ackermanLeft.write(steer);
-  ackermanRight.write(steer);
+  left  = (  left + steer) * (SERVO_MAX / 200.0) + 90 + Motors::steeringPhase;
+  right = (-right + steer) * (SERVO_MAX / 200.0) + 90 + Motors::steeringPhase;
+
+  // Applies Phase
+  steer = steer;
+  // Serial.println(steer);
+
+  ackermanLeft.write(  left + Motors::steeringConverge);
+  ackermanRight.write(right - Motors::steeringConverge);
 }
 
 // Set power of both DC motors

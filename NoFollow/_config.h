@@ -15,7 +15,7 @@
 //
 // Interface (Buzzer/Leds)
 //
-#define PIN_BUZZER              5
+#define PIN_BUZZER              10
 #define PIN_JOYSTICK            A3
 
 
@@ -51,6 +51,8 @@
 //
 #define EEPROM_ADR_SENSOR_MIN   0x01
 #define EEPROM_ADR_SENSOR_MAX   0x02
+#define EEPROM_STEER_PHASE      0x03
+#define EEPROM_STEER_CONVERGE   0x04
 
 
 //
@@ -67,7 +69,7 @@
 #define PIN_M1_IN1              MOSI
 #define PIN_M1_IN2              SCK
 
-#define PIN_M2_EN               10
+#define PIN_M2_EN               5
 #define PIN_M2_IN1              8
 #define PIN_M2_IN2              MISO
 
