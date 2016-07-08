@@ -1,5 +1,5 @@
 
-#define sensor 1
+#define sensor TX
 void setup() {
   pinMode(sensor, INPUT); 
   Serial.begin(9600);
