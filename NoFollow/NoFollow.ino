@@ -4,10 +4,10 @@
 
 // External Libraries
 // #include <SPI.h>
+#include <I2Cdev.h>
 #include <SPI.h>
 #include <Wire.h>
 #include <Servo.h>
-#include <I2Cdev.h>
 #include <Thread.h>
 #include <EEPROM.h>
 #include <Adafruit_GFX.h>

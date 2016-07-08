@@ -74,6 +74,12 @@
 #define PIN_M2_IN2              MISO
 
 //
+//Lap Sensor Settings
+//
+#define INTERRUPT               1
+#define CROSS_COUNTER           4      
+
+//
 // Servos for Ackerman
 //
 #define PIN_ACKERMAN_LEFT        13

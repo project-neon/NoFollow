@@ -33,7 +33,7 @@ Activity *runningActivity;
 Activity menus[] = {
   // Test
   { "Line Follower",      &activityLineFollower},
-  { "Line Reader",        &activityLineReader},
+  //{ "Line Reader",        &activityLineReader},
   { "Test Actuators",     &activityActuators},
   { "Steering Config",    &activityCalibrateSteering},
   // { "Calibrate",    &actTest},
