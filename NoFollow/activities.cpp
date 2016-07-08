@@ -73,6 +73,19 @@ void activityLineFollower_run(){
   //
   // Follow Line controll
   //
+  #define MINIMUM_SPEED         15
+  #define BASE_SPEED            100
+  #define CURVE_DIFERENTIAL     65
+  #define ERROR_APPROACH        0.4
+  #define K_INTEGRAL            0.0
+  #define K_DERIVATIVE          0.0
+
+  // Definições para Steering
+  #define STEERING_NORMAL_MULT  10
+  #define STEERING_CURVE_MULT   80
+  #define STEERING_CURVE_START  0.43
+  #define SPEEDOWN_MULT         1.5
+
   LineReader::readValues();
   float error = LineReader::getPosition();
   if(isnan(error)){
@@ -82,21 +95,30 @@ void activityLineFollower_run(){
   }
 
   // Moving average of error
-  realError = realError + (error - realError) * 1.0;
-  error = realError;
+  realError = realError + (error - realError) * ERROR_APPROACH;
+  // error = realError;
 
   // Integral
-  integral += error * 0.0;
+  integral += error  * K_INTEGRAL;
 
   // Derivative
-  float derivative = error - lastError;
+  float derivative = (error - lastError) * K_DERIVATIVE;
   lastError = error;
 
-  float m1 = 60 - abs(error) * 40 + error * 20 + integral;// - derivative * 20;
-  float m2 = 60 - abs(error) * 40 - error * 20 - integral;// + derivative * 20;
+  float curve = abs(error) > STEERING_CURVE_START ?
+    (error - abs(error) / error * STEERING_CURVE_START) : 0;
 
-  Motors::setPower(m1, m2);
-  Motors::setSteering(error * 20 + (abs(error) > 0.5 ? (error - abs(error) / error * 0.5) * 90 : 0 ));
+  float speedDown = 1 - abs(error) * SPEEDOWN_MULT;
+
+  float m1 = BASE_SPEED + curve * CURVE_DIFERENTIAL + integral - derivative;
+  float m2 = BASE_SPEED - curve * CURVE_DIFERENTIAL - integral + derivative;
+
+  Motors::setPower(
+    max(MINIMUM_SPEED, m1 * speedDown),
+    max(MINIMUM_SPEED, m2 * speedDown)
+  );
+
+  Motors::setSteering(error * STEERING_NORMAL_MULT + curve * STEERING_CURVE_MULT);
 }
 
 

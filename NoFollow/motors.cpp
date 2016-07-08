@@ -43,7 +43,7 @@ void Motors::init(){
 }
 
 // Sets the steering for the wheels
-#define SERVO_MAX       140
+#define SERVO_MAX       150
 void Motors::setSteering(float steer, bool activate){
   static bool activated;
 
@@ -63,15 +63,23 @@ void Motors::setSteering(float steer, bool activate){
   float left  = (steer > 0 ?  steer : 0) * 0.3;
   float right = (steer < 0 ? -steer : 0) * 0.3;
 
-  left  = (  left + steer) * (SERVO_MAX / 200.0) + 90 + Motors::steeringPhase;
-  right = (-right + steer) * (SERVO_MAX / 200.0) + 90 + Motors::steeringPhase;
+  left  = (  left + steer) * (SERVO_MAX / 200.0) + 90;
+  right = (-right + steer) * (SERVO_MAX / 200.0) + 90;
 
   // Applies Phase
-  steer = steer;
-  // Serial.println(steer);
+  left  += Motors::steeringPhase;
+  right += Motors::steeringPhase;
 
-  ackermanLeft.write(  left + Motors::steeringConverge);
-  ackermanRight.write(right - Motors::steeringConverge);
+  // Applies Converge
+  left  += Motors::steeringConverge;
+  right -= Motors::steeringConverge;
+
+  // Max/Min
+  left  = min(max( left, 180 - SERVO_MAX), SERVO_MAX);
+  right = min(max(right, 180 - SERVO_MAX), SERVO_MAX);
+
+  ackermanLeft.write(left);
+  ackermanRight.write(right);
 }
 
 // Set power of both DC motors

@@ -45,7 +45,7 @@ void Robot::init(){
 
   // Initialize Serial and Wait to be ok
   Serial.begin(SERIAL_SPEED);
-  while(!Serial && millis() < 2000);
+  // while(!Serial && millis() < 2000);
   delay(50);
 
   // Debug init
