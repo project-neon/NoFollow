@@ -22,14 +22,14 @@ Thread threadBeeper(threadBeeper_run, 5);
 //
 // Thread: Battery Checker
 //
-void threadBatteryChecker_run();
-Thread threadBatteryChecker(threadBatteryChecker_run, 3000);
+//void threadBatteryChecker_run();
+//Thread threadBatteryChecker(threadBatteryChecker_run, 3000);
 
 //
 // Thread: LED thread
 //
-void threadWatchdog_run();
-Thread threadWatchdog(threadWatchdog_run, 500);
+//void threadWatchdog_run();
+//Thread threadWatchdog(threadWatchdog_run, 500);
 
 //
 // Thread: IMU
@@ -79,9 +79,9 @@ void Robot::init(){
 
   // Add threads to system
   // system.add(&imuSensor);
-  system.add(&threadBeeper);
-  system.add(&threadWatchdog);
-  system.add(&threadBatteryChecker);
+  //system.add(&threadBeeper);
+  //system.add(&threadWatchdog);
+  //system.add(&threadBatteryChecker);
 };
 
 
@@ -213,7 +213,7 @@ void threadWatchdog_run(){
   // ledState ? (PORTE |=  (1<<2)) : (PORTE &= ~(1<<2));
 
   // Set timeout acordingly to Robot's state
-  threadWatchdog.setInterval(Robot::state == IDDLE ? 500 : 100);
+  //threadWatchdog.setInterval(Robot::state == IDDLE ? 500 : 100);
 }
 
 

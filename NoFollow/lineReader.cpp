@@ -50,10 +50,10 @@ float LineReader::getPosition(){
   for(int i = 8; i < 16; i++){
     float value = -(float)getValue(i) / (SENSOR_MAX - SENSOR_MIN) + 1.0;
     value = fmin(fmax(0.0, value), 1.0);
-    // Serial.print(i);
-    // Serial.print(" : ");
-    // Serial.print(value);
-    // Serial.print("\t");
+    //  Serial.print(i);
+    //  Serial.print(" : ");
+    //  Serial.print(value);
+    //  Serial.print("\t");
     weighted_sum = weighted_sum + value  * (i - 7);
     sum = sum + value;
   }
