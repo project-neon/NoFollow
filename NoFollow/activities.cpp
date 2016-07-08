@@ -11,6 +11,12 @@
 #include "interface.h"
 #include "lineReader.h"
 
+bool lineDetected = false;
+
+void lapSensorActivated(){
+  lineDetected = true;
+}
+
 // ====================================
 // ACTIVITY: Line Follower
 // ====================================
@@ -20,6 +26,10 @@ Thread activityLineFollower(activityLineFollower_run, 3);
 #define TIME_INTERVAL     600
 #define TIME_TO_START     TIME_INTERVAL * 3
 long spees = 0;
+float error = 0;
+float error1 = 0;
+float error2 = 0;
+float mv[] = {0, 0};
 void activityLineFollower_run(){
   static unsigned long start;
   static bool started;
@@ -47,13 +57,6 @@ void activityLineFollower_run(){
     Robot::doBeep(3, TIME_INTERVAL);
   };
 
-  if(Interface::readBtnState() != STICK_RELEASED){
-    Motors::setPower(0, 0);
-    Motors::setSteering(0, true);
-    Runner::exit();
-    return;
-  }
-
   if(!started && millis() - start < TIME_TO_START){
     display.setTextSize(3);
     display.setTextColor(WHITE, BLACK);
@@ -70,55 +73,104 @@ void activityLineFollower_run(){
     return;
   }
 
-  //
-  // Follow Line controll
-  //
-  #define MINIMUM_SPEED         15
-  #define BASE_SPEED            100
-  #define CURVE_DIFERENTIAL     65
-  #define ERROR_APPROACH        0.4
-  #define K_INTEGRAL            0.0
-  #define K_DERIVATIVE          0.0
 
-  // Definições para Steering
-  #define STEERING_NORMAL_MULT  10
-  #define STEERING_CURVE_MULT   80
-  #define STEERING_CURVE_START  0.43
-  #define SPEEDOWN_MULT         1.5
+  //Lap Sensor Interrupt
+  int cross_counter = CROSS_COUNTER;
+  attachInterrupt(digitalPinToInterrupt(1), lapSensorActivated, FALLING);
+  float g[3];
+  float derivative;
+  float curve;
+  float speedDown;
+  float m1;
+  float m2;
+  //unsigned long start;
+  while(true){
+    start = micros();
+    
+    if(Interface::readBtnState() != STICK_RELEASED){
+      Motors::setPower(0, 0);
+      Motors::setSteering(0, true);
+      Runner::exit();
+      detachInterrupt(digitalPinToInterrupt(1)); 
+      return;
+    }
 
-  LineReader::readValues();
-  float error = LineReader::getPosition();
-  if(isnan(error)){
-    error = lastSide;
-  }else{
-    lastSide = (error > 0 ? 1 : (error < 0 ? -1 : 0));
+    //
+    // Follow Line controll
+    //
+    #define MINIMUM_SPEED         15
+    #define BASE_SPEED            80
+    #define CURVE_DIFERENTIAL     65
+    #define ERROR_APPROACH        0.4
+
+    #define K_INTEGRAL            0.0
+    #define K_DERIVATIVE          0.35
+    #define K_PROPORTINAL         80.0  //ADD BY VITOR
+
+    // Definições para Steering
+    #define STEERING_NORMAL_MULT  10
+    #define STEERING_CURVE_MULT   80
+    #define STEERING_CURVE_START  0.25
+    #define SPEEDOWN_MULT         1.5
+
+    if(lineDetected){
+      cross_counter % 2 == 0 ? (PORTE |=  (1<<2)) : (PORTE &= ~(1<<2));
+      lineDetected = false;
+      cross_counter--;
+      if(cross_counter <= 0){
+        Motors::setPower(0, 0);
+        Motors::setSteering(0, true);
+        Runner::exit();
+        detachInterrupt(digitalPinToInterrupt(1));          
+        return;
+      } 
+    }
+
+    g[0] = K_PROPORTINAL + K_INTEGRAL/2 + K_DERIVATIVE;
+    g[1] = -K_PROPORTINAL + K_INTEGRAL/2 - 2*K_DERIVATIVE;
+    g[2] = K_DERIVATIVE;
+
+    error2 = error1;
+    error1 = error;
+
+    LineReader::readValues();
+    error = LineReader::getPosition();
+    if(isnan(error)){
+      error = lastSide;
+    }else{
+      lastSide = (error > 0 ? 1 : (error < 0 ? -1 : 0));
+    }
+
+    // Moving average of error
+    realError = realError + (error - realError) * ERROR_APPROACH;
+    // error = realError;
+
+    // Integral
+    integral += error  * K_INTEGRAL;
+
+    // Derivative
+    derivative = (error - lastError) * K_DERIVATIVE;
+    lastError = error;
+
+    curve = abs(error) > STEERING_CURVE_START ?
+      (error - abs(error) / error * STEERING_CURVE_START) : 0;
+
+    speedDown = 1 - abs(error) * SPEEDOWN_MULT;
+
+    m1 = BASE_SPEED + curve * CURVE_DIFERENTIAL; //+ integral - derivative;
+    m2 = BASE_SPEED - curve * CURVE_DIFERENTIAL; // - integral + derivative;
+
+    Motors::setPower(
+      m1 * speedDown,
+      m2 * speedDown
+    );
+
+    Motors::setSteering(error * STEERING_NORMAL_MULT + curve * STEERING_CURVE_MULT);
+    mv[1] = mv[0];
+    mv[0] = mv[1] + error*g[0] + error1*g[1] + error2*g[2];
+    //Motors::setSteering(mv[0]);
+    Serial.println(micros() - start);
   }
-
-  // Moving average of error
-  realError = realError + (error - realError) * ERROR_APPROACH;
-  // error = realError;
-
-  // Integral
-  integral += error  * K_INTEGRAL;
-
-  // Derivative
-  float derivative = (error - lastError) * K_DERIVATIVE;
-  lastError = error;
-
-  float curve = abs(error) > STEERING_CURVE_START ?
-    (error - abs(error) / error * STEERING_CURVE_START) : 0;
-
-  float speedDown = 1 - abs(error) * SPEEDOWN_MULT;
-
-  float m1 = BASE_SPEED + curve * CURVE_DIFERENTIAL + integral - derivative;
-  float m2 = BASE_SPEED - curve * CURVE_DIFERENTIAL - integral + derivative;
-
-  Motors::setPower(
-    max(MINIMUM_SPEED, m1 * speedDown),
-    max(MINIMUM_SPEED, m2 * speedDown)
-  );
-
-  Motors::setSteering(error * STEERING_NORMAL_MULT + curve * STEERING_CURVE_MULT);
 }
 
 
@@ -253,7 +305,7 @@ void activityCalibrateSteering_run(){
 // ACTIVITY: LINE READER DEBUG
 // ====================================
 void activityLineReader_run();
-Thread activityLineReader(activityLineReader_run, 10);
+//Thread activityLineReader(activityLineReader_run, 10);
 
 void activityLineReader_run(){
   // Serial.println("activityLineReader_run");

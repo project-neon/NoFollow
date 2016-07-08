@@ -75,6 +75,7 @@ void Robot::init(){
   // imuSensor = new IMUThread();
   // imuSensor.init();
   // imuSensor.setInterval(9);
+  pinMode(1, INPUT);
 
   // Add threads to system
   // system.add(&imuSensor);
