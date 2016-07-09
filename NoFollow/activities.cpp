@@ -30,7 +30,7 @@ float error = 0;
 //float error1 = 0;
 //float error2 = 0;
 //float mv[] = {0, 0};
-int SECCONDS = 23;
+int SECCONDS = 28;
 void activityLineFollower_run(){
   static unsigned long start;
   static unsigned long lastStart;
@@ -52,6 +52,7 @@ void activityLineFollower_run(){
     integral = 0;
     realError = 0;
     lastError = 0;
+    lineDetected = false;
 
     display.clearDisplay();
     display.setTextSize(1);
@@ -63,18 +64,24 @@ void activityLineFollower_run(){
 
     Robot::doBeep(3, TIME_INTERVAL);
   };
-//  int btn = Interface::readBtnState();
-  if(!started && millis() - start < TIME_TO_START){
+  int btn = Interface::readBtnState();
+  if(!started){// && millis() - start < TIME_TO_START){
     display.setTextSize(3);
     display.setTextColor(WHITE, BLACK);
     display.setCursor(45, 30);
-    if(millis() - start > TIME_TO_START - 100){
+    //if(millis() - start > TIME_TO_START - 100){
+    if(btn == STICK_CENTER){  
       display.print("GO!");
 
       // Set started flag
       started = true;
+      startedTime = millis();
     }else{
-      display.print(3 - (millis() - start) / TIME_INTERVAL);
+      if(btn == STICK_DOWN)
+        SECCONDS--;
+      if(btn == STICK_UP)
+        SECCONDS++;
+      display.print(SECCONDS);
     }
     display.display();
     return;
@@ -82,7 +89,7 @@ void activityLineFollower_run(){
 
   //Lap Sensor Interrupt
   int cross_counter = CROSS_COUNTER;
-  float g[3];
+  //float g[3];
   float derivative;
   float curve;
   float speedDown;
@@ -96,7 +103,7 @@ void activityLineFollower_run(){
     dt = start - lastStart;
     lastStart = start;
     
-    if(Interface::readBtnState() == STICK_CENTER){
+    if(Interface::readBtnState() == STICK_LEFT){
       Motors::setPower(0, 0);
       Motors::setSteering(0, true);
       Runner::exit();
@@ -122,18 +129,19 @@ void activityLineFollower_run(){
     #define STEERING_CURVE_START  0.58
     #define SPEEDOWN_MULT         0.8
 
-    if(lineDetected && (millis() - last_time) > 50){       
-      lineDetected = false;
+    // if(lineDetected && (millis() - last_time) > 100 && fabs(curve) < 0.1){       
+      if((millis() - startedTime) > SECCONDS * 1000) {
       cross_counter--;
       last_time = millis();
-      if(cross_counter <= 0){
+      // if(cross_counter <= 0){
         Motors::setPower(0, 0);
         Motors::setSteering(0, true);
         Runner::exit();
         detachInterrupt(digitalPinToInterrupt(INTERRUPT_PIN));          
         return;
-      } 
+      // } 
     }
+    lineDetected = false;
 
     //g[0] = K_PROPORTINAL + K_INTEGRAL/2 + K_DERIVATIVE;
     //g[1] = -K_PROPORTINAL + K_INTEGRAL/2 - 2*K_DERIVATIVE;
