@@ -41,7 +41,10 @@ void activityLineFollower_run(){
   static double integral;
   static double realError;
   static float lastError;
+  unsigned long last_time = 0;
 
+  attachInterrupt(digitalPinToInterrupt(INTERRUPT_PIN), lapSensorActivated, FALLING);
+  
   if(Runner::invalidated){
     lastSide = 0;
     start = millis();
@@ -60,33 +63,25 @@ void activityLineFollower_run(){
 
     Robot::doBeep(3, TIME_INTERVAL);
   };
-  int btn = Interface::readBtnState();
-  if(!started){
+//  int btn = Interface::readBtnState();
+  if(!started && millis() - start < TIME_TO_START){
     display.setTextSize(3);
     display.setTextColor(WHITE, BLACK);
     display.setCursor(45, 30);
-    if(btn == STICK_CENTER){
+    if(millis() - start > TIME_TO_START - 100){
       display.print("GO!");
 
       // Set started flag
       started = true;
-      startedTime = millis();
     }else{
-      if(btn == STICK_DOWN)
-        SECCONDS--;
-      else if(btn == STICK_UP)
-        SECCONDS++;
-      
-      display.print(SECCONDS);
+      display.print(3 - (millis() - start) / TIME_INTERVAL);
     }
     display.display();
     return;
   }
 
-
   //Lap Sensor Interrupt
   int cross_counter = CROSS_COUNTER;
-  attachInterrupt(digitalPinToInterrupt(1), lapSensorActivated, FALLING);
   float g[3];
   float derivative;
   float curve;
@@ -101,7 +96,7 @@ void activityLineFollower_run(){
     dt = start - lastStart;
     lastStart = start;
     
-    if(Interface::readBtnState() == STICK_LEFT){
+    if(Interface::readBtnState() == STICK_CENTER){
       Motors::setPower(0, 0);
       Motors::setSteering(0, true);
       Runner::exit();
@@ -113,8 +108,8 @@ void activityLineFollower_run(){
     // Follow Line controll
     //
     #define MINIMUM_SPEED         15
-    #define BASE_SPEED            40
-    #define CURVE_DIFERENTIAL     100
+    #define BASE_SPEED            38  
+    #define CURVE_DIFERENTIAL     112
     #define ERROR_APPROACH        0.4
 
     #define K_INTEGRAL            0.0000000
@@ -124,20 +119,20 @@ void activityLineFollower_run(){
     // Definições para Steering
     #define STEERING_NORMAL_MULT  12
     #define STEERING_CURVE_MULT   60
-    #define STEERING_CURVE_START  0.45
-    #define SPEEDOWN_MULT         0.9
+    #define STEERING_CURVE_START  0.58
+    #define SPEEDOWN_MULT         0.8
 
-    if(millis() - startedTime > SECCONDS * 1000){//lineDetected){
-      // cross_counter % 2 == 0 ? (PORTE |=  (1<<2)) : (PORTE &= ~(1<<2));
+    if(lineDetected && (millis() - last_time) > 50){       
       lineDetected = false;
       cross_counter--;
-      // if(cross_counter <= 0){
+      last_time = millis();
+      if(cross_counter <= 0){
         Motors::setPower(0, 0);
         Motors::setSteering(0, true);
         Runner::exit();
-        detachInterrupt(digitalPinToInterrupt(1));          
+        detachInterrupt(digitalPinToInterrupt(INTERRUPT_PIN));          
         return;
-      // } 
+      } 
     }
 
     //g[0] = K_PROPORTINAL + K_INTEGRAL/2 + K_DERIVATIVE;
