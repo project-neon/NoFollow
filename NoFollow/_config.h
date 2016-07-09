@@ -76,8 +76,8 @@
 //
 //Lap Sensor Settings
 //
-#define INTERRUPT               1
-#define CROSS_COUNTER           4      
+#define INTERRUPT_PIN           0
+#define CROSS_COUNTER           6      
 
 //
 // Servos for Ackerman

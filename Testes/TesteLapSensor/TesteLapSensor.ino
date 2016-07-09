@@ -1,11 +1,20 @@
 
-#define sensor 1
+#define sensor 0
+
+bool lineDetected = false;
+
+void lapSensorActivated(){
+  Serial.println("I'm Alive!'");
+}
+
 void setup() {
-  pinMode(sensor, INPUT); 
+  attachInterrupt(digitalPinToInterrupt(sensor), lapSensorActivated, RISING);
+
   Serial.begin(9600);
 }
 
-void loop() {
-  Serial.println(digitalRead(sensor));
 
+void loop() {
+  Serial.println("Joao tá com fome é quer beber!");
+   delay(100);
 }
