@@ -25,18 +25,12 @@ Thread activityLineFollower(activityLineFollower_run, 3);
 
 #define TIME_INTERVAL     600
 #define TIME_TO_START     TIME_INTERVAL * 3
-
+//long spees = 0;
 float error = 0;
-float last_error = 0;
-float motor_P = 0;
-float motor_D = 0;
-float motor_1 = 0;
-float motor_2 = 0;
-float steer = 0;
-float steer_p = 0;
-float steer_D = 0;
-float curve = 0;
-unsigned long last_time = 0;
+//float error1 = 0;
+//float error2 = 0;
+//float mv[] = {0, 0};
+int SECCONDS = 23;
 
 void activityLineFollower_run(){
   static unsigned long start;
@@ -45,18 +39,25 @@ void activityLineFollower_run(){
   
   static bool started;
   static int8_t lastSide;
+  static double integral;
+  static double realError;
+  static float lastError;
+  unsigned long last_time = 0;
+  static float steer;
+  unsigned int side;
 
-  //Lap Sensor Interrupt
-  int cross_counter = CROSS_COUNTER;
   attachInterrupt(digitalPinToInterrupt(INTERRUPT_PIN), lapSensorActivated, RISING);
-
+  
   if(Runner::invalidated){
     lastSide = 0;
     start = millis();
     started = false;
-   // integral = 0;
-   // realError = 0;
-   // lastError = 0;
+    integral = 0;
+    realError = 0;
+    lastError = 0;
+    lineDetected = false;
+    steer = 0;
+    side = 0;
 
     display.clearDisplay();
     display.setTextSize(1);
@@ -68,198 +69,142 @@ void activityLineFollower_run(){
 
     Robot::doBeep(3, TIME_INTERVAL);
   };
-  if(!started && millis() - start < TIME_TO_START){
+  int btn = Interface::readBtnState();
+  if(!started){// && millis() - start < TIME_TO_START){
     display.setTextSize(3);
     display.setTextColor(WHITE, BLACK);
     display.setCursor(45, 30);
-   if(millis() - start > TIME_TO_START - 100){
+    //if(millis() - start > TIME_TO_START - 100){
+    if(btn == STICK_CENTER){  
       display.print("GO!");
+
       // Set started flag
       started = true;
+      startedTime = millis();
     }else{
-      display.print(3 - (millis() - start) / TIME_INTERVAL);
+      if(btn == STICK_DOWN)
+        SECCONDS--;
+      if(btn == STICK_UP)
+        SECCONDS++;
+      display.print(SECCONDS);
     }
     display.display();
     return;
-  }  
+  }
+
+  //Lap Sensor Interrupt
+  int cross_counter = CROSS_COUNTER;
+  //float g[3];
+  float derivative;
+  float curve;
+  float speedDown;
+  float m1;
+  float m2;
+  int dt = 0;
   lastStart = micros();
-  
-  //
-  //Start Line FOLLOWING LOOP
-  //
+  //unsigned long start;
   while(true){
     start = micros();
-    //dt = start - lastStart;
-   // lastStart = start;
+    dt = start - lastStart;
+    lastStart = start;
     
-    //
-    // Stop if Button Pressed
-    //
-    if(Interface::readBtnState() == STICK_CENTER){
+    if(Interface::readBtnState() == STICK_LEFT){
       Motors::setPower(0, 0);
       Motors::setSteering(0, true);
       Runner::exit();
-      detachInterrupt(digitalPinToInterrupt(1)); 
+      detachInterrupt(digitalPinToInterrupt(INTERRUPT_PIN)); 
       return;
     }
 
-    //
-    // Stop if Lap End
-    //
-    if(lineDetected && (millis() - last_time) > 50){       
-      lineDetected = false;
-      cross_counter--;
-      last_time = millis();
-      if(cross_counter <= 0){
+    if(curve > 0.1){
+      side = 1;
+    }else if(curve < 0.1){
+      side = -1;
+    }else{
+      side = 0;
+    }
+
+    //if(lineDetected && (millis() - last_time) > 100 && (millis() - startedTime) > SECCONDS * 1000 && side < 0.1){       
+      if((millis() - startedTime) > SECCONDS * 1000) {
+        last_time = millis();
+      // if(cross_counter <= 0){
         Motors::setPower(0, 0);
         Motors::setSteering(0, true);
         Runner::exit();
         detachInterrupt(digitalPinToInterrupt(INTERRUPT_PIN));          
         return;
-      } 
+      //} 
     }
+
+    lineDetected = false;
 
     //
     // Follow Line controll
     //
     #define MINIMUM_SPEED         15
-    #define BASE_SPEED            50
-    
-    //
-    // MOTOR Constants
-    //
-    #define MOTOR_KP              0
-    #define MOTOR_KD              0
-    
-    //
-    // STEERING Constants
-    //
-    #define STEERING_KP           77.25    
-    #define STEERING_KD           0
-    #define STEERING_CURVE_START  0.45
+    #define BASE_SPEED            30  
+    #define CURVE_DIFERENTIAL     10
+    #define ERROR_APPROACH        0
+    #define DIFERENTIAL_START     0.75
 
-    //
-    // Read Sensor and get Error
-    //
+    #define K_INTEGRAL            0.0000000
+    #define K_DERIVATIVE          150 
+    #define K_PROPORTINAL         0  //ADD BY VITOR
+
+    // Definições para Steering
+    #define STEERING_NORMAL_MULT  15.75
+    #define STEERING_CURVE_MULT   60 //60
+    #define STEERING_CURVE_START  0.48 //0.55
+    #define SPEEDOWN_MULT         0.0    
+
+    //GET Error
     LineReader::readValues();
     error = LineReader::getPosition();
-    
-    Serial.println(error);
-    
-  
-    
-    //
-    // Determine if pass a Crossroad or leave line
-    //
+    //Set Last Direction Detected
     if(isnan(error)){
-      error = lastSide * 1;//2;
+      error = lastSide * 2;
     }else{
       lastSide = (error > 0 ? 1 : (error < 0 ? -1 : 0));
     }
-
-    //
-    // Calculate Curve
-
+    //Determine curve Side
+    curve = 0;
     if(error > STEERING_CURVE_START)
       curve = error - STEERING_CURVE_START;
     else if(error < -STEERING_CURVE_START)
-        curve = error + STEERING_CURVE_START;
-    curve = fabs(error) > STEERING_CURVE_START ? (error - (fabs(error) / error) * STEERING_CURVE_START) : 0;
-    curve = curve * STEERING_KP;
+      curve = error + STEERING_CURVE_START;
+      
+      
 
-    //
-    // Do Proportionals
-    //
-    motor_P = error * MOTOR_KP;
-    steer_p = error * STEERING_KP;
+    //Determine reduction to be applied in motors
+    speedDown = 1 - fmax(fmin(fabs(error) - STEERING_CURVE_START, 1.0), 0.0) * SPEEDOWN_MULT;
+    speedDown = speedDown < 0 ? 0 : speedDown;
 
     
+    // Derivative
+    derivative = (error - lastError) * K_DERIVATIVE;
+    lastError = error;
 
-    //
-    // Do Diferentials
-    //
-    motor_D = (error - last_error) * MOTOR_KD;
-    steer_D = (error - last_error) * STEERING_KD;
-
-    //
-    // Finish Derivative Process
-    //
-    last_error = error;
-
-    //
-    // Calculate motors PID
-    //
-    motor_1 = BASE_SPEED + motor_P  + motor_D; 
-    motor_2 = BASE_SPEED - motor_P  - motor_D;
-
-    //
-    // Calculate Steer PID
-    //
-    steer = steer_p + steer_D + curve;
-
-    //
-    // Apply motors power
-    //
-    Motors::setPower(motor_1, motor_2);
-
-    //
-    // Apply steer power
-    //
+    //Calculate motors speed
+    m1 = BASE_SPEED + (abs(error) > DIFERENTIAL_START ? error * CURVE_DIFERENTIAL : 0);// + curve * CURVE_DIFERENTIAL; //+ integral - derivative;
+    m2 = BASE_SPEED - (abs(error) > DIFERENTIAL_START ? error * CURVE_DIFERENTIAL : 0);//curve * CURVE_DIFERENTIAL; // - integral + derivative;
+    //Apply motors power with reduciton
+    Motors::setPower(
+      m1 * speedDown,
+      m2 * speedDown
+    );
+    //Apply Steering 
+    steer = error * STEERING_NORMAL_MULT + curve * STEERING_CURVE_MULT + derivative;// ;
     Motors::setSteering(steer);
-    
-
-    //g[0] = K_PROPORTINAL + K_INTEGRAL/2 + K_DERIVATIVE;
-    //g[1] = -K_PROPORTINAL + K_INTEGRAL/2 - 2*K_DERIVATIVE;
-    //g[2] = K_DERIVATIVE;
-    //error2 = error1;
-    //error1 = error;
-
-    
 
     // Moving average of error
     //realError = realError + (error - realError) * ERROR_APPROACH;
-     //error = realError;
+    // error = realError;
 
     // Integral
     //integral += dt * min(max(error, -STEERING_CURVE_START), STEERING_CURVE_START) * K_INTEGRAL;
 
-    // Derivative
-    //derivative = (error - lastError) * K_DERIVATIVE;
-    //lastError = error;
-
-    // curve = 0;
-    // if(error > STEERING_CURVE_START)
-    //   curve = error - STEERING_CURVE_START;
-    // else if(error < -STEERING_CURVE_START)
-    //   curve = error + STEERING_CURVE_START;
-    
-    // // if(Serial){
-    //   Serial.print(error); 
-    //   Serial.print(" "); 
-    //   Serial.println(curve);
-    // }
-       
     //curve = fabs(error) > STEERING_CURVE_START ?
     //(error - (fabs(error) / error) * STEERING_CURVE_START) : 0;
-
-    // speedDown = 1 - fmax(fmin(fabs(error) - STEERING_CURVE_START, 1.0), 0.0) * SPEEDOWN_MULT;
-    // speedDown = speedDown < 0 ? 0 : speedDown;
-
-//     m1 = BASE_SPEED + MOTOR_KP * error; //+ integral - derivative;
-//     m2 = BASE_SPEED - MOTOR_KP * error; // - integral + derivative;
-
-//     // Motors::setPower(
-//     //   m1 * speedDown,
-//     //   m2 * speedDown
-//     // );
-//     Motors::setPower(m1, m2);
-
-//  //   Motors::setSteering(error * STEERING_NORMAL_MULT + curve * STEERING_CURVE_MULT);
-//     Motors::setSteering(error * STEERING_KP);
-//     //mv[1] = mv[0];
-//     //mv[0] = mv[1] + error*g[0] + error1*g[1] + error2*g[2];
-    //Motors::setSteering(mv[0]);
-    //Serial.println(dt);
   }
 }
 
