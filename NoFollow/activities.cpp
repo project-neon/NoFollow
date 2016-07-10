@@ -30,7 +30,8 @@ float error = 0;
 //float error1 = 0;
 //float error2 = 0;
 //float mv[] = {0, 0};
-int SECCONDS = 28;
+int SECCONDS = 23;
+
 void activityLineFollower_run(){
   static unsigned long start;
   static unsigned long lastStart;
@@ -42,8 +43,10 @@ void activityLineFollower_run(){
   static double realError;
   static float lastError;
   unsigned long last_time = 0;
+  static float steer;
+  unsigned int side;
 
-  attachInterrupt(digitalPinToInterrupt(INTERRUPT_PIN), lapSensorActivated, FALLING);
+  attachInterrupt(digitalPinToInterrupt(INTERRUPT_PIN), lapSensorActivated, RISING);
   
   if(Runner::invalidated){
     lastSide = 0;
@@ -53,6 +56,8 @@ void activityLineFollower_run(){
     realError = 0;
     lastError = 0;
     lineDetected = false;
+    steer = 0;
+    side = 0;
 
     display.clearDisplay();
     display.setTextSize(1);
@@ -107,99 +112,101 @@ void activityLineFollower_run(){
       Motors::setPower(0, 0);
       Motors::setSteering(0, true);
       Runner::exit();
-      detachInterrupt(digitalPinToInterrupt(1)); 
+      detachInterrupt(digitalPinToInterrupt(INTERRUPT_PIN)); 
       return;
     }
+
+    if(curve > 0.1){
+      side = 1;
+    }else if(curve < 0.1){
+      side = -1;
+    }else{
+      side = 0;
+    }
+
+    //if(lineDetected && (millis() - last_time) > 100 && (millis() - startedTime) > SECCONDS * 1000 && side < 0.1){       
+      if((millis() - startedTime) > SECCONDS * 1000) {
+        last_time = millis();
+      // if(cross_counter <= 0){
+        Motors::setPower(-10, -10);
+        delay(250);
+        Motors::setPower(0, 0);
+        Motors::setSteering(0, true);
+        Runner::exit();
+        detachInterrupt(digitalPinToInterrupt(INTERRUPT_PIN));          
+        return;
+      //} 
+    }
+
+    lineDetected = false;
 
     //
     // Follow Line controll
     //
     #define MINIMUM_SPEED         15
     #define BASE_SPEED            35  
-    #define CURVE_DIFERENTIAL     110
-    #define ERROR_APPROACH        0.4
+    #define CURVE_DIFERENTIAL     120
+    #define ERROR_APPROACH        0
 
     #define K_INTEGRAL            0.0000000
-    #define K_DERIVATIVE          0.3875
-    #define K_PROPORTINAL         80.0  //ADD BY VITOR
+    #define K_DERIVATIVE          150 
+    #define K_PROPORTINAL         0  //ADD BY VITOR
 
     // Definições para Steering
-    #define STEERING_NORMAL_MULT  12
-    #define STEERING_CURVE_MULT   60
-    #define STEERING_CURVE_START  0.58
-    #define SPEEDOWN_MULT         0.8
+    #define STEERING_NORMAL_MULT  27
+    #define STEERING_CURVE_MULT   80 //60
+    #define STEERING_CURVE_START  0.58 //0.55
+    #define SPEEDOWN_MULT         0.85    
 
-    // if(lineDetected && (millis() - last_time) > 100 && fabs(curve) < 0.1){       
-      if((millis() - startedTime) > SECCONDS * 1000) {
-      cross_counter--;
-      last_time = millis();
-      // if(cross_counter <= 0){
-        Motors::setPower(0, 0);
-        Motors::setSteering(0, true);
-        Runner::exit();
-        detachInterrupt(digitalPinToInterrupt(INTERRUPT_PIN));          
-        return;
-      // } 
-    }
-    lineDetected = false;
 
-    //g[0] = K_PROPORTINAL + K_INTEGRAL/2 + K_DERIVATIVE;
-    //g[1] = -K_PROPORTINAL + K_INTEGRAL/2 - 2*K_DERIVATIVE;
-    //g[2] = K_DERIVATIVE;
-
-    //error2 = error1;
-    //error1 = error;
-
+    //GET Error
     LineReader::readValues();
     error = LineReader::getPosition();
+    //Set Last Direction Detected
     if(isnan(error)){
       error = lastSide * 2;
     }else{
       lastSide = (error > 0 ? 1 : (error < 0 ? -1 : 0));
     }
-
-    // Moving average of error
-    realError = realError + (error - realError) * ERROR_APPROACH;
-    // error = realError;
-
-    // Integral
-    integral += dt * min(max(error, -STEERING_CURVE_START), STEERING_CURVE_START) * K_INTEGRAL;
-
-    // Derivative
-    derivative = (error - lastError) * K_DERIVATIVE;
-    lastError = error;
-
+    //Determine curve Side
     curve = 0;
     if(error > STEERING_CURVE_START)
       curve = error - STEERING_CURVE_START;
     else if(error < -STEERING_CURVE_START)
       curve = error + STEERING_CURVE_START;
-    
-    // if(Serial){
-    //   Serial.print(error); 
-    //   Serial.print(" "); 
-    //   Serial.println(curve);
-    // }
-       
-    //curve = fabs(error) > STEERING_CURVE_START ?
-    //(error - (fabs(error) / error) * STEERING_CURVE_START) : 0;
+      
+      
 
+    //Determine reduction to be applied in motors
     speedDown = 1 - fmax(fmin(fabs(error) - STEERING_CURVE_START, 1.0), 0.0) * SPEEDOWN_MULT;
     speedDown = speedDown < 0 ? 0 : speedDown;
 
+    
+    // Derivative
+    derivative = (error - lastError) * K_DERIVATIVE;
+    lastError = error;
+
+    //Calculate motors speed
     m1 = BASE_SPEED + curve * CURVE_DIFERENTIAL; //+ integral - derivative;
     m2 = BASE_SPEED - curve * CURVE_DIFERENTIAL; // - integral + derivative;
-
+    //Apply motors power with reduciton
     Motors::setPower(
       m1 * speedDown,
       m2 * speedDown
     );
+    //Apply Steering 
+    steer = error * STEERING_NORMAL_MULT + curve * STEERING_CURVE_MULT + derivative;
+    Motors::setSteering(steer);
 
-    Motors::setSteering(error * STEERING_NORMAL_MULT + curve * STEERING_CURVE_MULT);
-    //mv[1] = mv[0];
-    //mv[0] = mv[1] + error*g[0] + error1*g[1] + error2*g[2];
-    //Motors::setSteering(mv[0]);
-    //Serial.println(dt);
+    // Moving average of error
+    //realError = realError + (error - realError) * ERROR_APPROACH;
+    // error = realError;
+
+    // Integral
+    //integral += dt * min(max(error, -STEERING_CURVE_START), STEERING_CURVE_START) * K_INTEGRAL;
+
+    //curve = fabs(error) > STEERING_CURVE_START ?
+    //(error - (fabs(error) / error) * STEERING_CURVE_START) : 0;
   }
 }
 
