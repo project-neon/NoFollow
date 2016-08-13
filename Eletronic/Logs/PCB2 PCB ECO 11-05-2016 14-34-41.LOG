@@ -1,0 +1,15 @@
+Removed Pin From Net: NetName=A_IN1 Pin=C9-1
+Change Component DesignItemId : Designator=J2 Old DesignItemId=CMP-3821332-2 New DesignItemId=CMP-2942e0604fadf685-3
+Change Component Footprint: Designator=J2 Old Footprint=SMTC-SSW-102-02-X-S-RA New Footprint=PCB-k4ydjmnwy2c45k73gn5q-1
+Change Component Comment : Designator=J2 Old Comment=CMP-3821332-2 New Comment=Harwin M22-7130442
+Added Component: Designator=C12(CAPC2013X145X48LL20T23)
+Added Pin To Net: NetName=NetC9_1 Pin=C9-1
+Added Pin To Net: NetName=A_IN1 Pin=C9-1
+Added Pin To Net: NetName=+5 Pin=C9-2
+Added Pin To Net: NetName=NetJ2_3 Pin=J2-3
+Added Pin To Net: NetName=NetJ2_3 Pin=U1-38
+Added Net: Name=NetJ2_3
+Added Pin To Net: NetName=NetJ2_4 Pin=J2-4
+Added Pin To Net: NetName=NetJ2_4 Pin=U1-37
+Added Net: Name=NetJ2_4
+Added Member To Class: ClassName=Sensors Member=Component MUX1 Texas Instruments CD74HC4067SM96
