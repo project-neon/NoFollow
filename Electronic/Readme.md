@@ -1,5 +1,7 @@
 # NoFollow - Electronics
 
+![3D Board](http://i.giphy.com/EJ3tXBzfkZKDu.gif)
+
 ## General Stuff
 
 This repository keeps all the information about the electronics for the line following robot ‘NoFollow’.
