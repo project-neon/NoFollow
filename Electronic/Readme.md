@@ -1,6 +1,6 @@
 # NoFollow - Electronics
 
-![3D Board](http://i.giphy.com/EJ3tXBzfkZKDu.gif)
+<div style="text-align:center"><img src ="http://i.giphy.com/EJ3tXBzfkZKDu.gif" /></div>
 
 ## General Stuff
 
