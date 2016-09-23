@@ -1,0 +1,20 @@
+Removed Pin From Net: NetName=A_IN1 Pin=C9-1
+Removed Pin From Net: NetName=NetR6_2 Pin=U1-31
+Removed Pin From Net: NetName=NetR7_2 Pin=U1-32
+Removed Member From Class: ClassName=Power Member=C13
+Removed Member From Class: ClassName=Interface Member=J3
+Removed Member From Class: ClassName=Interface Member=R4
+Removed Member From Class: ClassName=Power Member=R12
+Removed Member From Class: ClassName=Communication Member=R15
+Added Component: Designator=C12(CAPC2013X145X48LL20T23)
+Added Pin To Net: NetName=NetC9_1 Pin=C9-1
+Added Pin To Net: NetName=A_IN1 Pin=C9-1
+Added Pin To Net: NetName=+5 Pin=C9-2
+Added Pin To Net: NetName=NetR7_2 Pin=U1-31
+Added Pin To Net: NetName=NetR6_2 Pin=U1-32
+Added Member To Class: ClassName=Power Member=Component C10 Kemet T491A106M006AT
+Added Member To Class: ClassName=Interface Member=Component J1 TE Connectivity / AMP 2-1437565-8
+Added Member To Class: ClassName=Communication Member=Component R1 Bourns CR0805-FX-4701GLF
+Added Member To Class: ClassName=Interface Member=Component R5 Bourns CR0805-FX-4701GLF
+Added Member To Class: ClassName=Power Member=Component R16 Bourns CR0805-FX-4701GLF
+Added Member To Class: ClassName=Power Member=Component SW1 CMP-1184338-2

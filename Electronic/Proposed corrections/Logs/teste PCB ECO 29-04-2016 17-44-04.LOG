@@ -1,0 +1,4 @@
+Added Pin To Net: NetName=NetLM1_3 Pin=R14-1
+Added Pin To Net: NetName=NetLM1_3 Pin=U2-6
+Change Net Name : Old Net Name=NetLM1_3 New Net Name=VCC
+Added Member To Class: ClassName=Sensors Member=Component MUX1 Texas Instruments CD74HC4067SM96
