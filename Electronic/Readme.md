@@ -1,8 +1,9 @@
 # NoFollow - Electronics
 
-<div style="text-align:center"><img src ="http://i.giphy.com/EJ3tXBzfkZKDu.gif" /></div>
-Project link:
-https://workspace.circuitmaker.com/Projects/Details/Marcelo-Farias/NoFollowBoard
+<div style="align=middle"><img src ="http://i.giphy.com/EJ3tXBzfkZKDu.gif" /></div>
+
+
+## CircuitMakerProject link <a href="https://workspace.circuitmaker.com/Projects/Details/Marcelo-Farias/NoFollowBoard">here</a>
 
 ## General Stuff
 
