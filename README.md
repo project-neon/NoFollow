@@ -1,13 +1,22 @@
 # NoFollow
-The Software of NoBox's Line Follow robot
+The Software of NoBox's Line Follow robot of 2016
+<div style="align=middle"><img src ="https://lh6.googleusercontent.com/dSmcJUdhTZ4MqdsaFEA2A1Wdb8yyET4-vewyUAbY-lWUM_tOZqvAGq6wWCoJ_x5rcuTIqxJREm7put4=w1304-h675" /></div>
+
+<p align="center";> <b>NoFollow Final Version</b> </p>
 
 # Parts of the puzzle
 
-* `FollowFirmware_v0.1`: Initializes all the classes (modules).
+* `Firmware`: Is the main firmware that controls all the functions of the robot.
+* `Eletric`: This keeps all the information about the electronics for the line following robot ‘NoFollow’.
+* `Mechanic`: Contains the STL files of the robot design.
 
-* `commander`: Handles data received via radio communication.
+# Parts of the `Firmware` puzzle
 
-* `controller`: Controls the robots motor power, threads callbacks and PID constants.
+* `activities`: Controls the robots motor power, threads callbacks and PID constants.
+
+* `interface`: Show in the LED interface the time to stop the robot and read the comands by a joystick.
+
+* `lineReader`: Read the outside sensors and check the conditions.
 
 * `motors`: Initiates the "pinMODEs", sets power and directions of the motors.
 
@@ -16,12 +25,11 @@ velocity of the robot.
 
 * `robot`: Configurates the correct pinMODEs and beeps, defines the current robot's state.
 
-* `system`: Initializes and verifies the robot's activities, such as Serial communication, LEDs and battery level.
+* `runner`: Is the "menu" of the robot. In the interface receive the comands by the joystick to do tests actuators, calibrate steering and follow line.
 
-* `sensors`: Read the outside sensors and check the conditions.
 
 # Contributors
-* [Gustavo Silva de Paula](https://github.com/Gustavo7337)
+* [Gustavo Silva de Paula](https://github.com/Gustavo-dPaula)
 * [Ivan Seidel](http://github.com/ivanseidel)
 * [João Pedro Poloni Ponce](https://github.com/JoaoPedroPP)
 * [Lucas Andrade Cioffi](https://github.com/lacioffi)
