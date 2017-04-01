@@ -1,6 +1,6 @@
 # NoFollow
 The Software of NoBox's Line Follow robot of 2016
-<div style="align=middle"><img src ="https://lh6.googleusercontent.com/dSmcJUdhTZ4MqdsaFEA2A1Wdb8yyET4-vewyUAbY-lWUM_tOZqvAGq6wWCoJ_x5rcuTIqxJREm7put4=w1304-h675" /></div>
+<div style="align=middle"><img src ="https://github.com/Project-Neon/NoFollow/blob/master/NoFollow.png" /></div>
 
 <p align="center";> <b>NoFollow Final Version</b> </p>
 
